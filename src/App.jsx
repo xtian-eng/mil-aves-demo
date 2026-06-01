@@ -1,95 +1,95 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, Compass, Layers, ZoomIn, Info, AlertCircle, BookOpen, ArrowLeft, MapPin, Calendar, User, Database, ChevronRight, Archive, ChevronDown, X, Home, Heart, Lock, Unlock, Eye, EyeOff, Plus, Check, Edit, FolderKanban, LogOut, Settings } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Compass, Layers, ZoomIn, Info, AlertCircle, BookOpen, ArrowLeft, MapPin, Calendar, User, Database, ChevronRight, Archive, ChevronDown, X, Home, Lock, Unlock, Eye, EyeOff, Plus, Check, Edit, FolderKanban, LogOut, Settings } from 'lucide-react';
 
 // --- CONTRASTES DE COLOR PARA LAS FAMILIAS DINÁMICAS ---
 const FAMILY_COMMONS = {
-  Turdidae: 'Zorzales y Mirlos',
-  Corvidae: 'Cuervos y Arrendajos',
-  Trochilidae: 'Colibríes',
-  Struthionidae: 'Avestruces',
-  Casuariidae: 'Emúes y Casuarios',
-  Alcidae: 'Araos y Frailecillos',
-  Haematopodidae: 'Ostreros'
+  Furnariidae: 'Horneros y Vencejos',
+  Tyrannidae: 'Benteveos y Suiriríes',
+  Columbidae: 'Torcazas y Palomas',
+  Tinamidae: 'Perdices e Inambúes',
+  Mimidae: 'Calandrias',
+  Falconidae: 'Halcones y Caranchos',
+  Thraupidae: 'Cardenales y Jilgueros'
 };
 
 const FAMILY_COLORS = {
-  Turdidae: 'bg-emerald-500',
-  Corvidae: 'bg-indigo-500',
-  Trochilidae: 'bg-rose-500',
-  Struthionidae: 'bg-amber-500',
-  Casuariidae: 'bg-lime-600',
-  Alcidae: 'bg-cyan-600',
-  Haematopodidae: 'bg-[#E67E22]'
+  Furnariidae: 'bg-amber-700',
+  Tyrannidae: 'bg-yellow-500',
+  Columbidae: 'bg-slate-400',
+  Tinamidae: 'bg-stone-600',
+  Mimidae: 'bg-emerald-600',
+  Falconidae: 'bg-red-700',
+  Thraupidae: 'bg-orange-500'
 };
 
-// --- DATOS INICIALES DE ESPECÍMENES (HUEVOS) ---
+// --- DATOS INICIALES DE ESPECÍMENES (HUEVOS - CÓRDOBA) ---
 const INITIAL_SPECIMENS = [
   { 
-    id: 'O-001', catalogNumber: 'OOL-1984-001', family: 'Struthionidae', species: 'Struthio camelus', common: 'Avestruz Común', 
-    length: 150, breadth: 120, shape: 'circular', colorCode: '#fef3c7', pattern: 'unmarked',
-    notes: 'La especie de ave viva más grande.', collector: 'Dr. Jane Goodall', date: '1984-05-12', location: 'Serengeti, Tanzania', nest: 'Depresión en el Suelo', clutch: 12, active: true
+    id: 'O-001', catalogNumber: 'OOL-1984-001', family: 'Tinamidae', species: 'Nothura maculosa', common: 'Inambú Común (Perdiz)', 
+    length: 43, breadth: 30, shape: 'oval', colorCode: '#6b4c4a', pattern: 'pebbly',
+    notes: 'Cáscara muy lustrosa y lisa, color vináceo oscuro. Típico de los pastizales pampeanos.', collector: 'Dr. A. Castellanos', date: '1984-11-12', location: 'Mar Chiquita, Córdoba', nest: 'Depresión en el Suelo', clutch: 5, active: true
   },
   { 
-    id: 'O-002', catalogNumber: 'OOL-2015-089', family: 'Trochilidae', species: 'Mellisuga helenae', common: 'Colibrí Zunzuncito', 
-    length: 11, breadth: 8, shape: 'elliptical', colorCode: '#ffffff', pattern: 'unmarked',
-    notes: 'El huevo de ave más pequeño del mundo.', collector: 'A. Skutch', date: '2015-03-22', location: 'Ciénaga de Zapata, Cuba', nest: 'Taza Abierta (Telarañas)', clutch: 2, active: true
+    id: 'O-002', catalogNumber: 'OOL-2015-089', family: 'Columbidae', species: 'Zenaida auriculata', common: 'Torcaza Común', 
+    length: 25, breadth: 19, shape: 'elliptical', colorCode: '#ffffff', pattern: 'unmarked',
+    notes: 'Huevo blanco inmaculado. Recolectado tras fuerte tormenta estival.', collector: 'E. Bucher', date: '2015-03-22', location: 'Sierras Chicas, Córdoba', nest: 'Plataforma de Ramas', clutch: 2, active: true
   },
   { 
-    id: 'O-003', catalogNumber: 'OOL-1999-042', family: 'Turdidae', species: 'Turdus migratorius', common: 'Mirlo Americano', clutchId: 'NID-TUR-1999-A',
-    length: 28, breadth: 20, shape: 'oval', colorCode: '#ccfbf1', pattern: 'unmarked',
-    notes: 'Icónico "azul huevo de petirrojo" causado por el pigmento biliverdina. Primer huevo de la nidada.', collector: 'R. Peterson', date: '1999-04-15', location: 'Nueva York, EE.UU.', nest: 'Taza Abierta (Barro/Hierba)', clutch: 4, active: true
+    id: 'O-003', catalogNumber: 'OOL-1999-042', family: 'Mimidae', species: 'Mimus saturninus', common: 'Calandria Grande', clutchId: 'NID-MIM-1999-A',
+    length: 28, breadth: 20, shape: 'oval', colorCode: '#d1e6d3', pattern: 'blotched',
+    notes: 'Fondo verdoso pálido con manchas rojizas oscuras. Primer huevo de la nidada.', collector: 'M. Nores', date: '1999-10-15', location: 'Traslasierra, Córdoba', nest: 'Taza Abierta (Ramitas)', clutch: 4, active: true
   },
   { 
-    id: 'O-003B', catalogNumber: 'OOL-1999-043', family: 'Turdidae', species: 'Turdus migratorius', common: 'Mirlo Americano', clutchId: 'NID-TUR-1999-A',
-    length: 27.5, breadth: 19.8, shape: 'oval', colorCode: '#bdf0e6', pattern: 'unmarked',
-    notes: 'Segundo huevo de la misma nidada. Ligeramente más pequeño.', collector: 'R. Peterson', date: '1999-04-15', location: 'Nueva York, EE.UU.', nest: 'Taza Abierta (Barro/Hierba)', clutch: 4, active: true
+    id: 'O-003B', catalogNumber: 'OOL-1999-043', family: 'Mimidae', species: 'Mimus saturninus', common: 'Calandria Grande', clutchId: 'NID-MIM-1999-A',
+    length: 27.5, breadth: 19.8, shape: 'oval', colorCode: '#cce3ce', pattern: 'blotched',
+    notes: 'Segundo huevo de la misma nidada. Ligeramente más pequeño.', collector: 'M. Nores', date: '1999-10-15', location: 'Traslasierra, Córdoba', nest: 'Taza Abierta (Ramitas)', clutch: 4, active: true
   },
   { 
-    id: 'O-004', catalogNumber: 'OOL-1920-112', family: 'Alcidae', species: 'Uria aalge', common: 'Arao Común', 
-    length: 82, breadth: 50, shape: 'pyriform', colorCode: '#e5e7eb', pattern: 'blotched',
-    notes: 'Su forma piriforme altamente asimétrica evita que ruede por las cornisas de los acantilados.', collector: 'Desconocido', date: '1920-06-10', location: 'Islas Farallón, EE.UU.', nest: 'Ninguno (Roca Desnuda)', clutch: 1, active: true
+    id: 'O-004', catalogNumber: 'OOL-1920-112', family: 'Furnariidae', species: 'Furnarius rufus', common: 'Hornero', 
+    length: 28, breadth: 21, shape: 'oval', colorCode: '#fcfcfc', pattern: 'unmarked',
+    notes: 'Huevo blanco opaco clásico del ave nacional. Extraído de un nido de barro caído.', collector: 'Desconocido', date: '1920-09-10', location: 'Córdoba Capital, Córdoba', nest: 'Horno de Barro', clutch: 3, active: true
   },
   { 
-    id: 'O-005', catalogNumber: 'OOL-2008-005', family: 'Casuariidae', species: 'Dromaius novaehollandiae', common: 'Emú', 
-    length: 130, breadth: 90, shape: 'elliptical', colorCode: '#064e3b', pattern: 'pebbly',
-    notes: 'Cáscara verde oscuro muy texturizada para camuflaje en la hierba.', collector: 'S. Irwin', date: '2008-11-03', location: 'Interior de Australia', nest: 'Depresión en el Suelo', clutch: 9, active: true
+    id: 'O-005', catalogNumber: 'OOL-2008-005', family: 'Falconidae', species: 'Caracara plancus', common: 'Carancho', 
+    length: 59, breadth: 45, shape: 'oval', colorCode: '#e8ddc5', pattern: 'blotched',
+    notes: 'Fondo ocre densamente manchado de marrón rojizo oscuro.', collector: 'R. Heredia', date: '2008-11-03', location: 'Pampa de Achala, Córdoba', nest: 'Plataforma de Ramas Altas', clutch: 2, active: true
   },
   { 
-    id: 'O-006', catalogNumber: 'OOL-2010-022', family: 'Corvidae', species: 'Corvus corax', common: 'Cuervo Común', 
-    length: 50, breadth: 33, shape: 'oval', colorCode: '#bfebc7', pattern: 'blotched',
-    notes: 'Huevos de color verde pálido a azulado con manchas marrones y olivas.', collector: 'J. Audubon', date: '2010-04-18', location: 'Yellowstone, EE.UU.', nest: 'Plataforma de Ramas', clutch: 5, active: true
+    id: 'O-006', catalogNumber: 'OOL-2010-022', family: 'Tyrannidae', species: 'Pitangus sulphuratus', common: 'Benteveo Común', 
+    length: 28, breadth: 21, shape: 'oval', colorCode: '#fdf6e3', pattern: 'speckled',
+    notes: 'Color crema claro con pecas oscuras concentradas en el polo mayor.', collector: 'S. Salvador', date: '2010-11-18', location: 'Río Ceballos, Córdoba', nest: 'Esférico Cerrado (Pastos)', clutch: 4, active: true
   },
   { 
-    id: 'O-007', catalogNumber: 'OOL-1995-104', family: 'Corvidae', species: 'Cyanocitta cristata', common: 'Arrendajo Azul', clutchId: 'NID-CYA-1995',
-    length: 28, breadth: 20, shape: 'oval', colorCode: '#d1e6d3', pattern: 'speckled',
-    notes: 'Huevos que varían del azul claro al beige con múltiples pecas oscuras. Huevo A.', collector: 'M. Bates', date: '1995-05-02', location: 'Ontario, Canadá', nest: 'Taza Abierta (Raíces)', clutch: 4, active: true
+    id: 'O-007', catalogNumber: 'OOL-1995-104', family: 'Thraupidae', species: 'Paroaria coronata', common: 'Cardenal Copete Rojo', clutchId: 'NID-PAR-1995',
+    length: 24, breadth: 17, shape: 'oval', colorCode: '#e5ecd6', pattern: 'speckled',
+    notes: 'Fondo blanco verdoso intensamente salpicado de pardo y oliva. Huevo A.', collector: 'J. Navas', date: '1995-11-02', location: 'San Marcos Sierras, Córdoba', nest: 'Taza Abierta (Raíces)', clutch: 3, active: true
   },
   { 
-    id: 'O-007B', catalogNumber: 'OOL-1995-105', family: 'Corvidae', species: 'Cyanocitta cristata', common: 'Arrendajo Azul', clutchId: 'NID-CYA-1995',
-    length: 28.2, breadth: 20.1, shape: 'oval', colorCode: '#c8e0cb', pattern: 'speckled',
-    notes: 'Huevo B de la nidada.', collector: 'M. Bates', date: '1995-05-02', location: 'Ontario, Canadá', nest: 'Taza Abierta (Raíces)', clutch: 4, active: true
+    id: 'O-007B', catalogNumber: 'OOL-1995-105', family: 'Thraupidae', species: 'Paroaria coronata', common: 'Cardenal Copete Rojo', clutchId: 'NID-PAR-1995',
+    length: 24.2, breadth: 17.1, shape: 'oval', colorCode: '#e1e8d1', pattern: 'speckled',
+    notes: 'Huevo B de la nidada.', collector: 'J. Navas', date: '1995-11-02', location: 'San Marcos Sierras, Córdoba', nest: 'Taza Abierta (Raíces)', clutch: 3, active: true
   },
   { 
-    id: 'O-007C', catalogNumber: 'OOL-1995-106', family: 'Corvidae', species: 'Cyanocitta cristata', common: 'Arrendajo Azul', clutchId: 'NID-CYA-1995',
-    length: 27.8, breadth: 19.9, shape: 'oval', colorCode: '#dbeade', pattern: 'speckled',
-    notes: 'Huevo C de la nidada.', collector: 'M. Bates', date: '1995-05-02', location: 'Ontario, Canadá', nest: 'Taza Abierta (Raíces)', clutch: 4, active: true
+    id: 'O-007C', catalogNumber: 'OOL-1995-106', family: 'Thraupidae', species: 'Paroaria coronata', common: 'Cardenal Copete Rojo', clutchId: 'NID-PAR-1995',
+    length: 23.8, breadth: 16.9, shape: 'oval', colorCode: '#ebf1dd', pattern: 'speckled',
+    notes: 'Huevo C de la nidada.', collector: 'J. Navas', date: '1995-11-02', location: 'San Marcos Sierras, Córdoba', nest: 'Taza Abierta (Raíces)', clutch: 3, active: true
   },
   { 
-    id: 'O-007D', catalogNumber: 'OOL-2005-014', family: 'Corvidae', species: 'Cyanocitta cristata', common: 'Arrendajo Azul', 
-    length: 29.1, breadth: 20.5, shape: 'oval', colorCode: '#d4e8d6', pattern: 'speckled',
-    notes: 'Huevo individual recolectado de un nido parcialmente destruido por una tormenta.', collector: 'L. Gomez', date: '2005-06-14', location: 'Quebec, Canadá', nest: 'Taza Abierta (Raíces)', clutch: 1, active: true
+    id: 'O-007D', catalogNumber: 'OOL-2005-014', family: 'Thraupidae', species: 'Paroaria coronata', common: 'Cardenal Copete Rojo', 
+    length: 24.5, breadth: 17.5, shape: 'oval', colorCode: '#e5ecd6', pattern: 'speckled',
+    notes: 'Huevo individual donado por un particular.', collector: 'L. Gomez', date: '2005-12-14', location: 'Cruz del Eje, Córdoba', nest: 'Taza Abierta (Raíces)', clutch: 1, active: true
   },
   { 
-    id: 'O-008', catalogNumber: 'OOL-2001-055', family: 'Haematopodidae', species: 'Haematopus palliatus', common: 'Ostrero Americano', 
-    length: 56, breadth: 39, shape: 'pyriform', colorCode: '#e8ddc5', pattern: 'blotched',
-    notes: 'Patrón muy críptico para esconderse en la arena y entre conchas.', collector: 'T. Parra', date: '2001-06-11', location: 'Galápagos, Ecuador', nest: 'Depresión en la Arena', clutch: 3, active: true
+    id: 'O-008', catalogNumber: 'OOL-2001-055', family: 'Thraupidae', species: 'Sicalis flaveola', common: 'Jilguero Dorado', 
+    length: 19, breadth: 14, shape: 'oval', colorCode: '#e8f4f8', pattern: 'speckled',
+    notes: 'Huevo celeste muy pálido con pecas castañas. Encontrado en nido abandonado de hornero.', collector: 'T. Parra', date: '2001-11-11', location: 'Villa Carlos Paz, Córdoba', nest: 'Cavidad Natural (Hornero)', clutch: 4, active: true
   }
 ];
 
-// --- DATOS INICIALES DE NIDADAS (CLUTCHES) ---
+// --- DATOS INICIALES DE NIDADAS (CLUTCHES - CÓRDOBA) ---
 const INITIAL_CLUTCHES = [
-  { id: 'NID-TUR-1999-A', family: 'Turdidae', species: 'Turdus migratorius', common: 'Mirlo Americano', collector: 'R. Peterson', date: '1999-04-15', location: 'Nueva York, EE.UU.', nest: 'Taza Abierta (Barro/Hierba)', clutch: 4 },
-  { id: 'NID-CYA-1995', family: 'Corvidae', species: 'Cyanocitta cristata', common: 'Arrendajo Azul', collector: 'M. Bates', date: '1995-05-02', location: 'Ontario, Canadá', nest: 'Taza Abierta (Raíces)', clutch: 4 }
+  { id: 'NID-MIM-1999-A', family: 'Mimidae', species: 'Mimus saturninus', common: 'Calandria Grande', collector: 'M. Nores', date: '1999-10-15', location: 'Traslasierra, Córdoba', nest: 'Taza Abierta (Ramitas)', clutch: 4 },
+  { id: 'NID-PAR-1995', family: 'Thraupidae', species: 'Paroaria coronata', common: 'Cardenal Copete Rojo', collector: 'J. Navas', date: '1995-11-02', location: 'San Marcos Sierras, Córdoba', nest: 'Taza Abierta (Raíces)', clutch: 3 }
 ];
 
 // --- COMPONENT: Reusable eBird Style Dropdown Filter ---
@@ -403,6 +403,7 @@ const TaxonomicExplorer = ({ specimensList, familiesList }) => {
     setSelectedSpecimen(null);
   };
 
+  // --- Dynamic calculation of families based on active specimens in current list ---
   const activeSpecimensGlobal = specimensList.filter(s => s.active);
 
   const dynamicFamilies = familiesList.map(fam => {
@@ -410,6 +411,7 @@ const TaxonomicExplorer = ({ specimensList, familiesList }) => {
     return { ...fam, count };
   });
 
+  // 4. VISTA DE DETALLE DE ESPÉCIMEN (HUEVO)
   if (selectedSpecimen) {
     const path = [
       { label: 'Inicio', icon: Home, onClick: goToRoot },
@@ -424,6 +426,7 @@ const TaxonomicExplorer = ({ specimensList, familiesList }) => {
     return <SpecimenDetailView specimen={selectedSpecimen} breadcrumbs={<Breadcrumbs path={path} />} />;
   }
 
+  // 3. VISTA DE NIDADA
   if (selectedClutch) {
     const path = [
       { label: 'Inicio', icon: Home, onClick: goToRoot },
@@ -474,6 +477,7 @@ const TaxonomicExplorer = ({ specimensList, familiesList }) => {
     );
   }
 
+  // 2. VISTA DE ESPECIE
   if (selectedSpecies) {
     const speciesSpecimens = specimensList.filter(s => s.species === selectedSpecies.species && s.active);
     
@@ -751,7 +755,7 @@ const TaxonomicExplorer = ({ specimensList, familiesList }) => {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#555555]" size={18} />
             <input
               type="text"
-              placeholder="Buscar familia (ej. Turdidae)..."
+              placeholder="Buscar familia (ej. Furnariidae)..."
               value={familySearch}
               onChange={(e) => setFamilySearch(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-[#F4F6F5] border border-[#EAEAEA] rounded-md text-[16px] focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-all"
@@ -824,7 +828,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
 
   // --- Specimen Form Fields ---
   const [catalogNumber, setCatalogNumber] = useState('');
-  const [family, setFamily] = useState('Turdidae');
+  const [family, setFamily] = useState('Furnariidae');
   const [species, setSpecies] = useState('');
   const [common, setCommon] = useState('');
   const [length, setLength] = useState('');
@@ -842,7 +846,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
 
   // --- Clutch Form Fields ---
   const [clutchIdInput, setClutchIdInput] = useState('');
-  const [clutchFamily, setClutchFamily] = useState('Turdidae');
+  const [clutchFamily, setClutchFamily] = useState('Furnariidae');
   const [clutchSpecies, setClutchSpecies] = useState('');
   const [clutchCommon, setClutchCommon] = useState('');
   const [clutchCollector, setClutchCollector] = useState('');
@@ -1429,7 +1433,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
               <input
                 type="text"
                 required
-                placeholder="Ej. Turdidae"
+                placeholder="Ej. Furnariidae"
                 value={family}
                 onChange={(e) => setFamily(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors"
@@ -1460,7 +1464,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
               <input
                 type="text"
                 required
-                placeholder="Ej. Turdus migratorius"
+                placeholder="Ej. Furnarius rufus"
                 value={species}
                 onChange={(e) => setSpecies(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm italic focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors"
@@ -1473,7 +1477,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
               <input
                 type="text"
                 required
-                placeholder="Ej. Mirlo Americano"
+                placeholder="Ej. Hornero"
                 value={common}
                 onChange={(e) => setCommon(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors"
@@ -1550,7 +1554,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
               </label>
               <input
                 type="text"
-                placeholder="Ej. Dr. Charles Darwin"
+                placeholder="Ej. Dr. Arturo Castellanos"
                 value={collector}
                 onChange={(e) => setCollector(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors"
@@ -1573,7 +1577,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
               </label>
               <input
                 type="text"
-                placeholder="Ej. Córdoba, Argentina"
+                placeholder="Ej. Sierras Chicas, Córdoba"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors"
@@ -1588,7 +1592,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
               </label>
               <input
                 type="text"
-                placeholder="Ej. Taza abierta hecha de barro"
+                placeholder="Ej. Horno de barro en poste"
                 value={nest}
                 onChange={(e) => setNest(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors"
@@ -1603,7 +1607,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
                 min="1"
                 value={clutch}
                 onChange={(e) => setClutch(parseInt(e.target.value) || 1)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors"
               />
             </div>
             <div>
@@ -1612,10 +1616,10 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
               </label>
               <input
                 type="text"
-                placeholder="Ej. NID-TUR-1999-A"
+                placeholder="Ej. NID-FUR-2026-A"
                 value={clutchId}
                 onChange={(e) => setClutchId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors"
               />
             </div>
           </div>
@@ -1629,7 +1633,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
               placeholder="Detalles de la cáscara, pigmentación o del entorno silvestre..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none font-['Open_Sans']"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#E67E22] transition-colors font-['Open_Sans']"
             ></textarea>
           </div>
 
@@ -1667,7 +1671,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
                 <input
                   type="text"
                   required
-                  placeholder="Ej. NID-CYA-2026-B"
+                  placeholder="Ej. NID-FUR-2026-B"
                   value={clutchIdInput}
                   disabled={!!editingClutchId}
                   onChange={(e) => setClutchIdInput(e.target.value)}
@@ -1681,7 +1685,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
                   <input
                     type="text"
                     required
-                    placeholder="Ej. Turdidae"
+                    placeholder="Ej. Furnariidae"
                     value={clutchFamily}
                     onChange={(e) => setClutchFamily(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E67E22]"
@@ -1705,7 +1709,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
                 <input
                   type="text"
                   required
-                  placeholder="Ej. Turdus migratorius"
+                  placeholder="Ej. Furnarius rufus"
                   value={clutchSpecies}
                   onChange={(e) => setClutchSpecies(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E67E22] italic"
@@ -1717,7 +1721,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
                 <input
                   type="text"
                   required
-                  placeholder="Ej. Mirlo Americano"
+                  placeholder="Ej. Hornero"
                   value={clutchCommon}
                   onChange={(e) => setClutchCommon(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E67E22]"
@@ -1750,7 +1754,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
                 <label className="block text-xs font-bold text-[#555555] uppercase mb-1.5 font-['Montserrat']">Ubicación</label>
                 <input
                   type="text"
-                  placeholder="Lugar de recolección"
+                  placeholder="Ej. Sierras Chicas, Córdoba"
                   value={clutchLocation}
                   onChange={(e) => setClutchLocation(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E67E22]"
@@ -1761,7 +1765,7 @@ const AdminPanel = ({ specimensList, setSpecimensList, clutchesList, setClutches
                 <label className="block text-xs font-bold text-[#555555] uppercase mb-1.5 font-['Montserrat']">Estructura del Nido</label>
                 <input
                   type="text"
-                  placeholder="Ej. Copa abierta en ramas bajas"
+                  placeholder="Ej. Horno de barro en poste"
                   value={clutchNest}
                   onChange={(e) => setClutchNest(e.target.value)}
                   className="w-full px-3 py-2 bg-white border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E67E22]"
@@ -1859,6 +1863,14 @@ export default function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [loginError, setLoginError] = useState('');
+
+  // Carga de tipografías de Google Fonts
+  useEffect(() => {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600;700&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }, []);
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
